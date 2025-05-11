@@ -474,8 +474,15 @@ pod поднялся после запуска сервиса
 проверим ответ сервера
 ![img 13](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img13.jpg)
 
-
-
+файлы  конфигурации используемые в задании 
+К заданию 1
+[Создание deployment-single.yaml с одной репликой](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/deployment-replicas.yaml)
+[Обновление Deployment до двух реплик](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/deployment-replicas.yaml)
+[создание сервиса](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/service-replicas.yaml)
+[отдельный Pod multitool](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/multitool-pod.yaml)
+К заданию 2
+[Создание Deployment с Init-контейнером](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/nginx-init-deployment.yaml)
+[Создание сервиса](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/nginx-init-svc.yaml)
 
 ### Правила приема работы
 
