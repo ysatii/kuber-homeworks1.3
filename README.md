@@ -52,6 +52,7 @@ docker ps
 ```
 kubectl get namespaces
 ```
+
 2. Создание deployment-single.yaml (с одной репликой)
 ```
 nano deployment-single.yaml
@@ -96,6 +97,7 @@ kubectl apply -f deployment-single.yaml
 kubectl get pods -n netology
 kubectl get deployments -n netology
 ```
+
 4. Исправление ошибок
 под не поднялся ! 
 ![img 3](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img3.jpg)
@@ -103,17 +105,16 @@ kubectl get deployments -n netology
 проверим статус Pod-а
 ```
 kubectl describe pod nginx-multitool-6bf48db46c-rj7ls -n netology
-
 ```
 
- Проверим логи контейнеров:
+Проверим логи контейнеров:
 
-    Для контейнера nginx:
+Для контейнера nginx:
 ```
 kubectl logs nginx-multitool-6bf48db46c-rj7ls -n netology -c nginx
 ```
 
-    Для контейнера multitool:
+Для контейнера multitool:
 ```
 kubectl logs nginx-multitool-6bf48db46c-rj7ls -n netology -c multitool
 ```
@@ -125,6 +126,7 @@ perl
 Редактировать
 bind() to 0.0.0.0:80 failed (98: Address in use)
 nginx: [emerg] still could not bind()
+
  Причина проблемы:
 Порт 80 уже используется контейнером nginx.
 
@@ -256,13 +258,16 @@ kubectl apply -f service-replicas.yaml
 ```
 kubectl get svc -n netology
 ```
+
 ![img 6](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img6.jpg)
 
 9. Создадим отдельный Pod multitool
+
 ```
 nano multitool-pod.yaml
 ```
 
+Листинг nano multitool-pod.yaml
 ```
 apiVersion: v1
 kind: Pod
@@ -276,6 +281,7 @@ spec:
     ports:
     - containerPort: 1180
 ```
+
 Применим манифест:
 ```
 kubectl apply -f multitool-pod.yaml
@@ -285,9 +291,10 @@ kubectl apply -f multitool-pod.yaml
 ```
 kubectl get pods -n netology
 ```
-10. Подключаемся в Pod multitool-test:
 
+10. Подключаемся в Pod multitool-test:
 Выполним команду для подключения:
+
 ```
 kubectl exec -it multitool-test -n netology -- /bin/bash
 ```
@@ -415,6 +422,8 @@ data:
     }
 
 ```
+nginx настроен на работу на любом доступном порту
+
 
 2. Применение Deployment
 
@@ -446,6 +455,7 @@ kubectl describe pod -n netology -l app=nginx-init
 ```
 nano nginx-init-svc.yaml
 ```
+
 листинг nginx-init-svc.yaml
 ```
 apiVersion: v1
@@ -476,10 +486,10 @@ pod поднялся после запуска сервиса
 
 файлы  конфигурации используемые в задании 
 К заданию 1
-1. [Создание deployment-single.yaml с одной репликой](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/deployment-single.yaml)
+1. [Создание deployment  с одной репликой](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/deployment-single.yaml)
 2. [Обновление Deployment до двух реплик](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/deployment-replicas.yaml)
-3. [создание сервиса](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/service-replicas.yaml)
-4. [отдельный Pod multitool](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/multitool-pod.yaml)
+3. [Создание сервиса](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/service-replicas.yaml)
+4. [Отдельный Pod multitool](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/multitool-pod.yaml)
 
 К заданию 2
 1. [Создание Deployment с Init-контейнером](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/nginx-init-deployment.yaml)
