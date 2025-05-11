@@ -476,7 +476,7 @@ pod поднялся после запуска сервиса
 
 файлы  конфигурации используемые в задании 
 К заданию 1
-1. [Создание deployment-single.yaml с одной репликой](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/deployment-replicas.yaml)
+1. [Создание deployment-single.yaml с одной репликой](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/deployment-single.yaml)
 2. [Обновление Deployment до двух реплик](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/deployment-replicas.yaml)
 3. [создание сервиса](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/service-replicas.yaml)
 4. [отдельный Pod multitool](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/multitool-pod.yaml)
