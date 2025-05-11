@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multitool-test
+  namespace: netology
+spec:
+  containers:
+  - name: multitool
+    image: wbitt/network-multitool
+    ports:
+    - containerPort: 1180

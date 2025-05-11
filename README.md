@@ -318,7 +318,7 @@ curl http://nginx-multitool-svc:8080
 ![img 8](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img8.jpg)
 ![img 9](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img9.jpg)
 
-### Задание 2. Создать Deployment и обеспечить старт основного контейнера при выполнении условий
+## Задание 2. Создать Deployment и обеспечить старт основного контейнера при выполнении условий
 
 1. Создать Deployment приложения nginx и обеспечить старт контейнера только после того, как будет запущен сервис этого приложения.
 2. Убедиться, что nginx не стартует. В качестве Init-контейнера взять busybox.
@@ -326,6 +326,156 @@ curl http://nginx-multitool-svc:8080
 4. Продемонстрировать состояние пода до и после запуска сервиса.
 
 ------
+## Решение 2.
+
+### Анализ Задания :
+
+Цель:
+
+    Создать Deployment, который использует Init-контейнер busybox.
+
+    Init-контейнер будет ожидать доступность сервиса приложения перед запуском основного контейнера nginx.
+
+    Основной контейнер nginx не должен стартовать, пока сервис не будет доступен.
+
+### Логика выполнения задания:
+
+    Создаём Deployment с Init-контейнером busybox.
+
+        Init-контейнер будет выполнять команду wget и проверять доступность сервиса.
+
+        Если сервис недоступен, Init-контейнер будет находиться в статусе Waiting.
+
+    Основной контейнер nginx стартует только после завершения Init-контейнера.
+
+    Создаём Service для nginx
+
+1. Создание Deployment с Init-контейнером
+
+Создадим файл nginx-init-deployment.yaml:
+```
+nano nginx-init-deployment.yaml
+```
+
+Листинг nginx-init-deployment.yaml
+```
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-init
+  namespace: netology
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginx-init
+  template:
+    metadata:
+      labels:
+        app: nginx-init
+    spec:
+      initContainers:
+      - name: delay
+        image: busybox
+        command: ['sh', '-c', "until nslookup nginx-init-svc.$(cat /var/run/secrets/kubernetes.io/serviceaccount/namespace).svc.cluster.local; do echo waiting for nginx-init-svc; sleep 2; done"]
+
+      containers:
+      - name: nginx
+        image: nginx:1.25.4
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginx-config
+          mountPath: /etc/nginx/conf.d/default.conf
+          subPath: default.conf
+
+      volumes:
+      - name: nginx-config
+        configMap:
+          name: nginx-config
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+  namespace: netology
+data:
+  default.conf: |
+    server {
+      listen 0.0.0.0:80;
+      server_name localhost;
+
+      location / {
+        root /usr/share/nginx/html;
+        index index.html;
+      }
+    }
+
+```
+
+2. Применение Deployment
+
+```
+kubectl apply -f nginx-init-deployment.yaml
+```
+
+3. Проверим статус Pod-а:
+
+```
+kubectl get pods -n netology
+```
+
+4. Просмотр состояния Pod-а до создания Service:
+
+``` 
+kubectl describe pod -n netology -l app=nginx-init
+```
+
+![img 10](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img10.jpg)
+![img 11](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img11.jpg)
+
+5. Создание Service для nginx
+
+Теперь создадим Service, который станет доступным для nginx:
+
+Создадим файл nginx-init-svc.yaml:
+
+```
+nano nginx-init-svc.yaml
+```
+листинг nginx-init-svc.yaml
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-init-svc
+  namespace: netology
+spec:
+  type: NodePort
+  selector:
+    app: nginx-init
+  ports:
+    - port: 80
+      targetPort: 80
+      nodePort: 30515
+```
+
+Приминяем
+```
+kubectl apply -f nginx-init-svc.yaml
+```
+![img 12](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img12.jpg)
+
+pod поднялся после запуска сервиса 
+
+проверим ответ сервера
+![img 13](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img13.jpg)
+
+
+
 
 ### Правила приема работы
 
