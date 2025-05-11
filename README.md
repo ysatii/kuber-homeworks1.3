@@ -19,7 +19,9 @@ minikube status
 kubectl get nodes
 docker ps
 ```
+![img 1](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img1.jpg)
 
+Необходимое П.О. установлено! можно приступать к выполнению задания
 
 
 ### Инструменты и дополнительные материалы, которые пригодятся для выполнения задания
@@ -30,7 +32,7 @@ docker ps
 
 ------
 
-### Задание 1. Создать Deployment и обеспечить доступ к репликам приложения из другого Pod
+## Задание 1. Создать Deployment и обеспечить доступ к репликам приложения из другого Pod
 
 1. Создать Deployment приложения, состоящего из двух контейнеров — nginx и multitool. Решить возникшую ошибку.
 2. После запуска увеличить количество реплик работающего приложения до 2.
@@ -39,6 +41,64 @@ docker ps
 5. Создать отдельный Pod с приложением multitool и убедиться с помощью `curl`, что из пода есть доступ до приложений из п.1.
 
 ------
+
+## Решение 1.
+1. Необходимо ссоздать namespace netology
+``` 
+ kubectl create namespace netology
+```
+
+ проверим какие пространства имен у нас есть!
+```
+kubectl get namespaces
+```
+2. Создание deployment-single.yaml (с одной репликой)
+```
+nano deployment-single.yaml
+```
+
+листинг  deployment-single.yaml
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-multitool
+  namespace: netology
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nmt
+  template:
+    metadata:
+      labels:
+        app: nmt
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.25.4
+        ports:
+        - containerPort: 80
+      - name: multitool
+        image: wbitt/network-multitool
+        ports:
+        - containerPort: 1180
+```
+3. Применение Deployment с одной репликой
+
+Применяем Deployment:
+```
+kubectl apply -f deployment-single.yaml
+```
+
+Проверим статус:
+```
+kubectl get pods -n netology
+kubectl get deployments -n netology
+```
+
+
+
 
 ### Задание 2. Создать Deployment и обеспечить старт основного контейнера при выполнении условий
 
