@@ -480,6 +480,7 @@ pod поднялся после запуска сервиса
 2. [Обновление Deployment до двух реплик](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/deployment-replicas.yaml)
 3. [создание сервиса](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/service-replicas.yaml)
 4. [отдельный Pod multitool](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/multitool-pod.yaml)
+
 К заданию 2
 1. [Создание Deployment с Init-контейнером](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/nginx-init-deployment.yaml)
 2. [Создание сервиса](https://github.com/ysatii/kuber-homeworks1.3/blob/main/src/nginx-init-svc.yaml)
