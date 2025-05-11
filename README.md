@@ -96,9 +96,227 @@ kubectl apply -f deployment-single.yaml
 kubectl get pods -n netology
 kubectl get deployments -n netology
 ```
+4. Исправление ошибок
+под не поднялся ! 
+![img 3](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img3.jpg)
 
+проверим статус Pod-а
+```
+kubectl describe pod nginx-multitool-6bf48db46c-rj7ls -n netology
 
+```
 
+ Проверим логи контейнеров:
+
+    Для контейнера nginx:
+```
+kubectl logs nginx-multitool-6bf48db46c-rj7ls -n netology -c nginx
+```
+
+    Для контейнера multitool:
+```
+kubectl logs nginx-multitool-6bf48db46c-rj7ls -n netology -c multitool
+```
+
+Мы получили важное диагностическое сообщение из логов контейнера multitool:
+
+perl
+Копировать
+Редактировать
+bind() to 0.0.0.0:80 failed (98: Address in use)
+nginx: [emerg] still could not bind()
+ Причина проблемы:
+Порт 80 уже используется контейнером nginx.
+
+Контейнер multitool также пытается запустить nginx на том же порту 80, и это вызывает конфликт.
+
+В Kubernetes один Pod — это единая сетевая зона, и два контейнера не могут слушать один и тот же порт.
+
+Решение проблемы:
+Изменить порт для multitool:
+
+В deployment-single.yaml нужно изменить порт для multitool.
+
+Например, укажем 1180 (уникальный порт для multitool).
+
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-multitool
+  namespace: netology
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nmt
+  template:
+    metadata:
+      labels:
+        app: nmt
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.25.4
+        ports:
+        - containerPort: 80
+      - name: multitool
+        image: wbitt/network-multitool
+        ports:
+        - containerPort: 1180
+        env:
+        - name: HTTP_PORT
+          value: "1180"
+
+```
+под в работе! 
+![img 4](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img4.jpg)
+
+5. Обновление Deployment до двух реплик
+```
+nano deployment-replicas.yaml
+```
+
+листинг deployment-replicas.yaml
+```
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-multitool
+  namespace: netology
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: nmt
+  template:
+    metadata:
+      labels:
+        app: nmt
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.25.4
+        ports:
+        - containerPort: 80
+      - name: multitool
+        image: wbitt/network-multitool
+        ports:
+        - containerPort: 1180
+        env:
+        - name: HTTP_PORT
+          value: "1180"
+```
+
+6. Применение Deployment с двумя репликами
+
+```
+kubectl apply -f deployment-replicas.yaml
+```
+
+Проверим статус
+```
+kubectl get pods -n netology
+kubectl get deployments -n netology
+```
+![img 5](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img5.jpg)
+
+7. Создание Service
+```
+nano service-replicas.yaml
+```
+
+листинг service-replicas.yaml
+```
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-multitool-svc
+  namespace: netology
+spec:
+  selector:
+    app: nmt
+  ports:
+    - protocol: TCP
+      name: nginx
+      port: 80
+      targetPort: 80
+    - protocol: TCP
+      name: multitool
+      port: 8080
+      targetPort: 1180
+```
+
+8. Применение Service
+```
+kubectl apply -f service-replicas.yaml
+```
+
+Проверим:
+```
+kubectl get svc -n netology
+```
+![img 6](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img6.jpg)
+
+9. Создадим отдельный Pod multitool
+```
+nano multitool-pod.yaml
+```
+
+```
+apiVersion: v1
+kind: Pod
+metadata:
+  name: multitool-test
+  namespace: netology
+spec:
+  containers:
+  - name: multitool
+    image: wbitt/network-multitool
+    ports:
+    - containerPort: 1180
+```
+Применим манифест:
+```
+kubectl apply -f multitool-pod.yaml
+```
+
+Проверим статус Pod-а:
+```
+kubectl get pods -n netology
+```
+10. Подключаемся в Pod multitool-test:
+
+Выполним команду для подключения:
+```
+kubectl exec -it multitool-test -n netology -- /bin/bash
+```
+
+Теперь мы внутри Pod-а multitool-test!
+
+Проверим доступ по имени Service:
+```
+curl http://nginx-multitool-svc:80
+```
+Проверим доступ по IP Service:
+
+Для этого сначала получим IP Service:
+
+kubectl get svc -n netology
+
+И выполним:
+```
+curl http://10.99.23.134:80
+```
+
+Проверим доступ к multitool:
+```
+curl http://nginx-multitool-svc:8080
+```
+
+![img 7](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img7.jpg)
+![img 8](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img8.jpg)
+![img 9](https://github.com/ysatii/kuber-homeworks1.3/blob/main/img/img9.jpg)
 
 ### Задание 2. Создать Deployment и обеспечить старт основного контейнера при выполнении условий
 
